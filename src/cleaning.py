@@ -262,8 +262,8 @@ def main():
 
     # Guardar
     print("\n[4/4] Guardando datos procesados...")
-    df_shorts.to_csv("data/raw/shorts.csv",      index=False, encoding="utf-8-sig")
-    df_long.to_csv("data/raw/long_videos.csv",   index=False, encoding="utf-8-sig")
+    df_shorts.to_csv(OUT_SHORTS,     index=False, encoding="utf-8-sig")
+    df_long.to_csv(OUT_LONG,         index=False, encoding="utf-8-sig")
     df_comments.to_csv(OUT_COMMENTS, index=False, encoding="utf-8-sig")
     print(f"   ✅ Guardado en data/processed/")
 
