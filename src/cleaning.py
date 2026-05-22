@@ -33,7 +33,8 @@ def basic_report(df: pd.DataFrame, name: str):
     """Imprime un diagnóstico rápido del DataFrame."""
     print(f"\n  [{name}]")
     print(f"   Filas:      {len(df)}")
-    print(f"   Duplicados: {df.duplicated(subset='video_id').sum()}")
+    id_col = "video_id" if "video_id" in df.columns else "comment_id"
+    print(f"   Duplicados: {df.duplicated(subset=id_col).sum()}")
     nulls = df.isnull().sum()
     nulls = nulls[nulls > 0]
     if len(nulls):
