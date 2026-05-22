@@ -12,6 +12,7 @@ import pandas as pd
 
 # ─── Rutas ────────────────────────────────────────────────────────────────────
 
+RAW_ALL        = "data/raw/all_videos.csv"
 RAW_SHORTS     = "data/raw/shorts.csv"
 RAW_LONG       = "data/raw/long_videos.csv"
 RAW_COMMENTS   = "data/raw/comments.csv"
@@ -229,8 +230,21 @@ def main():
 
     # Cargar datos
     print("\n[1/4] Cargando datos crudos...")
-    df_shorts   = load_csv(RAW_SHORTS)
-    df_long     = load_csv(RAW_LONG)
+    # Reclasificar: Short = 61s o menos, O menciona #shorts con menos de 3 min
+    df_all = load_csv(RAW_ALL)
+    df_all["is_short"] = (
+        (df_all["duration_sec"] <= 61) |
+        (
+            (df_all["duration_sec"] <= 180) &
+            (
+                df_all["title"].str.lower().str.contains("#shorts", na=False) |
+                df_all["description"].str.lower().str.contains("#shorts", na=False)
+            )
+        )
+    )
+
+    df_shorts = df_all[df_all["is_short"]].copy().reset_index(drop=True)
+    df_long   = df_all[~df_all["is_short"]].copy().reset_index(drop=True)
     df_comments = load_csv(RAW_COMMENTS)
 
     # Diagnóstico inicial
@@ -248,8 +262,8 @@ def main():
 
     # Guardar
     print("\n[4/4] Guardando datos procesados...")
-    df_shorts.to_csv(OUT_SHORTS,   index=False, encoding="utf-8-sig")
-    df_long.to_csv(OUT_LONG,       index=False, encoding="utf-8-sig")
+    df_shorts.to_csv("data/raw/shorts.csv",      index=False, encoding="utf-8-sig")
+    df_long.to_csv("data/raw/long_videos.csv",   index=False, encoding="utf-8-sig")
     df_comments.to_csv(OUT_COMMENTS, index=False, encoding="utf-8-sig")
     print(f"   ✅ Guardado en data/processed/")
 
