@@ -171,7 +171,13 @@ def process_videos(raw_videos: list[dict]) -> pd.DataFrame:
             "published_at":    snippet["publishedAt"],
             "tags":            ", ".join(snippet.get("tags", [])),
             "duration_sec":    duration,
-            "is_short":        duration <= 60,
+            "is_short": (
+                duration <= 180 and (
+                    "#shorts" in snippet.get("title", "").lower() or
+                    "#shorts" in snippet.get("description", "").lower() or
+                    duration <= 60
+                )
+            ),
             "view_count":      int(stats.get("viewCount",    0)),
             "like_count":      int(stats.get("likeCount",    0)),
             "comment_count":   int(stats.get("commentCount", 0)),
